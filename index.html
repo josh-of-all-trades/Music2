@@ -19,9 +19,13 @@
 	  		<button type="button" id="start" class="buttons" style="height: 55px; width: 55px">
 		    	<img src="img/start.png" style=" height: 40px ; width: 40 px">
 			</button>
-<!-->	    	<button type="button" id="stop" style="height: 55px; width: 55px">
+			<!--
+	    	<button type="button" id="stop" style="height: 55px; width: 55px">
 		    	<img src="img/stop.png" style="height: 40px ; width: 40 px">
-			</button> <-->
+			</button> -->
+			<button type ="button" id="submit" class="buttons" style="height: 55px; width: 100px">
+				<img src ="img/submit.png" style="height: 40px; width: 90 px">
+			</button>
 		</div>
 
 	<script src="http://www.html5canvastutorials.com/libraries/kinetic-v4.3.1-beta2.js">
@@ -51,9 +55,8 @@
 
         		// request last bar from port
         		if (true) {
-	        		boxes[i][j] = {
-	        			isOn : false,
-	        			box : new Kinetic.Rect({
+	        		boxes[i][j] = new Kinetic.Rect({
+		        			isOn : false,
 		        			x: i * 35,
 		        			y: j * 25,
 		        			width: 35,
@@ -62,9 +65,8 @@
 		        			stroke:'gray',
 		        			strokeWidth:3,
 		        			id: 'box' + i.toString() + j.toString()
-		        		})
-	        		}
-        		layer2.add(boxes[i][j].box);
+		        	})
+        		layer2.add(boxes[i][j]);
         		}
 	        }
     	}
@@ -72,9 +74,8 @@
 	  	// Creates an array of objects containing a boolean and kinetic rectangles
 		for(var i = 4; i < 20; i++) {
 			for (var j = 0; j < 6; j++) {
-				boxes[i][j] = {
-					isOn : false,
-					box : new Kinetic.Rect({
+				boxes[i][j] = new Kinetic.Rect({
+						isOn : false,
 						x: /*Math.floor((i)/ 4) * 7 + */(i * 35),
 						y: j * 25,
 						width: 35,
@@ -84,24 +85,25 @@
 						stroke: 'gray',
 						id: 'box' + i.toString() + j.toString()
 					})
-				}
-				boxes[i][j].box.on('click', function() {
+
+				boxes[i][j].on('click', function() {
 					if (this.isOn) {
 						this.isOn = false;
 						this.setFill('black');
 					} else {
+						console.log("I'M ON");
 						this.isOn = true;
 				        this.setFill('red');
 					}
 	   	    		layer1.draw();
 	   		   	});
 
-				boxes[i][j].box.on('mouseover', function() {
+				boxes[i][j].on('mouseover', function() {
 					this.setFill('#993333');
 	   	    		layer1.draw();
 	   		   	});
 
-				boxes[i][j].box.on('mouseout', function() {
+				boxes[i][j].on('mouseout', function() {
 					if (this.isOn) {
 						this.setFill('red');
 					} else {
@@ -110,7 +112,7 @@
 	   	    		layer1.draw();
 	   		   	});
 
-				layer1.add(boxes[i][j].box);
+				layer1.add(boxes[i][j]);
 			}
 		}
 
@@ -142,10 +144,32 @@
         	});
 	    }, false);
 
-	    document.getElementById('stop').addEventListener('click', function() {
+	    document.getElementById('submit').addEventListener('click', function() {
         	if(trans) {
           	trans.stop();
  	       }
+
+ 	       //Creates output array of boolean
+
+		  	var out = new Array(16);
+		  	for (var i = 0; i < 16; i++) {
+		   		out[i] = new Array(6);
+		  	}
+
+
+ 	       	for (var i = 0; i < 16; i++) {
+ 	       		for (var j = 0; j < 6; j++) {
+ 	       			out[i][j] = {
+ 	       				col : i,
+ 	       				row : j,
+ 	       				isOn : boxes[i+4][j].isOn 	       				
+ 	       			}
+ 	       		}
+ 		    }
+
+ 	       var jsonOut = JSON.stringify(out);
+ 	       console.log(jsonOut);
+
       	}, false);
 
 	</script>
