@@ -24,20 +24,12 @@
 			</button>
 		</div>
 
-
-	<script src="http://www.html5canvastutorials.com/libraries/kinetic-v4.3.1-beta2.js"></script>
+	<script src="http://www.html5canvastutorials.com/libraries/kinetic-v4.3.1-beta2.js">
+	</script>
 	<script>
-		// 
-
-		// creates a 4 x 6 array for previous user data
-		var prevBoxes = new Array(4);
-		for (var i = 0; i < 4; i++) {
-			prevBoxes[i] = new Array(6);
-		}
-
-        // creates a 32 x 6 array
-	  	var boxes = new Array(32);
-	  	for (var i = 0; i < 32; i++) {
+        // creates a 20 x 6 array
+	  	var boxes = new Array(20);
+	  	for (var i = 0; i < 20; i++) {
 	   		boxes[i] = new Array(6);
 	  	}
 		
@@ -59,20 +51,23 @@
 
         		// request last bar from port
         		if (true) {
-	        		prevBoxes[i][j] = new Kinetic.Rect({
-	        			x: i * 35,
-	        			y: j * 25,
-	        			width: 35,
-	        			height: 25,
-	        			fill: 'blue',
-	        			stroke:'gray',
-	        			strokeWidth:3,
-	        			id: i.toString() + j.toString()
-	        		});
+	        		boxes[i][j] = {
+	        			isOn : false,
+	        			box : new Kinetic.Rect({
+		        			x: i * 35,
+		        			y: j * 25,
+		        			width: 35,
+		        			height: 25,
+		        			fill: 'blue',
+		        			stroke:'gray',
+		        			strokeWidth:3,
+		        			id: 'box' + i.toString() + j.toString()
+		        		})
+	        		}
+        		layer2.add(boxes[i][j].box);
         		}
-        		layer1.add(prevBoxes[i][j]);
-        	}
-        }
+	        }
+    	}
 
 	  	// Creates an array of objects containing a boolean and kinetic rectangles
 		for(var i = 4; i < 20; i++) {
@@ -87,7 +82,7 @@
 						fill: 'black',
 						strokeWidth: 3,
 						stroke: 'gray',
-						id: i.toString() + j.toString()
+						id: 'box' + i.toString() + j.toString()
 					})
 				}
 				boxes[i][j].box.on('click', function() {
@@ -98,16 +93,12 @@
 						this.isOn = true;
 				        this.setFill('red');
 					}
-	   	    		layer2.draw();
+	   	    		layer1.draw();
 	   		   	});
 
 				boxes[i][j].box.on('mouseover', function() {
-//					if (this.isOn) {
-						this.setFill('#993333');
-//					} else {
-//				        this.setFill('#999999');
-//					}
-	   	    		layer2.draw();
+					this.setFill('#993333');
+	   	    		layer1.draw();
 	   		   	});
 
 				boxes[i][j].box.on('mouseout', function() {
@@ -116,11 +107,10 @@
 					} else {
 				        this.setFill('black');
 					}
-	   	    		layer2.draw();
+	   	    		layer1.draw();
 	   		   	});
 
-
-				layer2.add(boxes[i][j].box);
+				layer1.add(boxes[i][j].box);
 			}
 		}
 
@@ -138,14 +128,6 @@
 		stage.add(layer1);
 		stage.add(layer2);
 		stage.add(timeLineLayer);
-/*
-      	setTimeout(function() {
-        	timeLine.transitionTo({
-          	x: 720,
-          	duration: 3,
-	        });
-    	}, 1000);
-*/
 
       	var trans = null;
 
@@ -165,45 +147,6 @@
           	trans.stop();
  	       }
       	}, false);
-/*
-      	var touching = function(x1, x2) {
-			return ((x1+3) > x2 && (x1+3) < x2 + 35);
-			//alert('hello');
-		};
-
-		var checkCollision = function() {
-	    	for (var j = 0; j < 5; j++) {
-/*					if (touching(timeLine.x, prevBoxes[i][j].box.x)) {
-			        	prevBoxes[i][j].box.setFill('green');		        	
-					}*//*
-				var xPos = timeLine.x;
-				if (boxes[Math.floor(xPos)]) {
-					alert('hello');
-			       	boxes[i][j].box.setFill('green');
-				}
-			}
-			
-		}
-	        		
-
-		window.setInterval(checkCollision(), 5);
-*/
-
-/*
-		var touching = function(x1, x2) {
-			return ((x1+3) > x2 && (x1+3) < x2 + 35);
-		};
-
-		for (var i = 0; i < 4; i++) {
-        	for (var j = 0; j < 5; j++) {
-				if (touching(trans.x, prevBoxes[i][j].box.x) {
-		        	prevBoxes[i][j].box.setFill('green');		        	
-				}
-			}
-		}
-	        	
-*/
-
 
 	</script>
 
