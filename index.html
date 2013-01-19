@@ -1,178 +1,442 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
-<head>
-	Awesome App
-</head>
+  <head>
+    <title>Facebook Client-side Authentication Example</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <div id="fb-root"></div>
+    <script>
 
-<body bgcolor = "black">
+    	var uid;
+    	var accessToken;
+    	var numEvents;
+      var eventIndex;
+      var eventID;
+    	var eventArray = new Array();
+      var selectedEventID;
+      var numGuests;
+      var guestArray = new Array();
+      var artistArrayCompiled = new Array();
+      var artistMap = new Map();
+      var topTenArtists = new Array();
+      var userIndex = 0;
 
+      // Load the SDK Asynchronously
+      (function(d){
+         	var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+         	if (d.getElementById(id)) {return;}
+         	js = d.createElement('script'); js.id = id; js.async = true;
+         	js.src = "//connect.facebook.net/en_US/all.js";
+         	ref.parentNode.insertBefore(js, ref);
+       }(document));
 
-	<style type="text/css">
-		#container { position:absolute; left: 17%; top:50%; height:13em; width: 710px; margin-top:-5em ; background-color: gray; padding: 25px}
-		#buttons {padding-bottom: 10px}
-	</style>
+      // Init the SDK upon load
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : '379721315433347', // App ID
+          status     : true, // check login status
+          cookie     : true, // enable cookies to allow the server to access the session
+          xfbml      : true  // parse XFBML
+        });
 
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+        // listen for and handle auth.statusChange events
+        FB.Event.subscribe('auth.statusChange', function(response) {
 
-	<div id="container">
-		<div id="buttons">
-	  		<button type="button" id="start" class="buttons" style="height: 55px; width: 55px">
-		    	<img src="img/start.png" style=" height: 40px ; width: 40 px">
-			</button>
-			<!--
-	    	<button type="button" id="stop" style="height: 55px; width: 55px">
-		    	<img src="img/stop.png" style="height: 40px ; width: 40 px">
-			</button> -->
-			<button type ="button" id="submit" class="buttons" style="height: 55px; width: 100px">
-				<img src ="img/submit.png" style="height: 40px; width: 90 px">
-			</button>
-		</div>
+          	if (response.authResponse) {
+          		uid = response.authResponse.userID;
+				      accessToken = response.authResponse.accessToken;
+				      FB.api(uid + '?fields=events', function(response) {
+					       processEvents(response);
+				      });
 
-	<script src="http://www.html5canvastutorials.com/libraries/kinetic-v4.3.1-beta2.js">
-	</script>
-	<script>
-        // creates a 20 x 6 array
-	  	var boxes = new Array(20);
-	  	for (var i = 0; i < 20; i++) {
-	   		boxes[i] = new Array(6);
-	  	}
-		
-		// Creates a stage
-		var stage = new Kinetic.Stage({
-			container: 'container',
-			align: 'center',
-			width: 900,
-			height: 200
-		});
+          	} else {
 
-        var layer1 = new Kinetic.Layer();
-        var layer2 = new Kinetic.Layer();
-        var timeLineLayer = new Kinetic.Layer();
+            }
+          
 
-        // displays the array of objects containing previous user's last bar
-        for (var i = 0; i < 4; i++) {
-        	for (var j = 0; j < 6; j++) {
+        });
+      
 
-        		// request last bar from port
-        		if (true) {
-	        		boxes[i][j] = new Kinetic.Rect({
-		        			isOn : false,
-		        			x: i * 35,
-		        			y: j * 25,
-		        			width: 35,
-		        			height: 25,
-		        			fill: 'blue',
-		        			stroke:'gray',
-		        			strokeWidth:3,
-		        			id: 'box' + i.toString() + j.toString()
-		        	})
-        		layer2.add(boxes[i][j]);
-        		}
-	        }
-    	}
+    // Given a user FB id, return an array of artist names
+    var getArtistsFromUser = function(user_id, callback) {
+      FB.api(user_id + '/music.listens', function (response) {
+       var num_songs = Math.min(50, response.data.length);
+        if (num_songs === 0) {
+          callback(new Array());
+          return;
+        }        
+        var artistArray = new Array();
+        for (var i = 0; i < num_songs; i++) {
+          FB.api(response.data[i].data.song.id, function (song_response) {
+            artistArray.push(song_response.data.musician[0].name);
+            if (artistArray.length == num_songs) {
+              callback(artistArray);
+            }
+          });
+        }
+      });
+    };
 
-	  	// Creates an array of objects containing a boolean and kinetic rectangles
-		for(var i = 4; i < 20; i++) {
-			for (var j = 0; j < 6; j++) {
-				boxes[i][j] = new Kinetic.Rect({
-						isOn : false,
-						x: /*Math.floor((i)/ 4) * 7 + */(i * 35),
-						y: j * 25,
-						width: 35,
-						height: 25,
-						fill: 'black',
-						strokeWidth: 3,
-						stroke: 'gray',
-						id: 'box' + i.toString() + j.toString()
-					})
-
-				boxes[i][j].on('click', function() {
-					if (this.isOn) {
-						this.isOn = false;
-						this.setFill('black');
-					} else {
-						console.log("I'M ON");
-						this.isOn = true;
-				        this.setFill('red');
-					}
-	   	    		layer1.draw();
-	   		   	});
-
-				boxes[i][j].on('mouseover', function() {
-					this.setFill('#993333');
-	   	    		layer1.draw();
-	   		   	});
-
-				boxes[i][j].on('mouseout', function() {
-					if (this.isOn) {
-						this.setFill('red');
-					} else {
-				        this.setFill('black');
-					}
-	   	    		layer1.draw();
-	   		   	});
-
-				layer1.add(boxes[i][j]);
-			}
-		}
-
-		var timeLine = new Kinetic.Rect({
-			x: 0,
-			y: 0,
-			width: 6,
-			height: 150,
-			fill: 'yellow',
-			id: "time_line"
-		});
+    // condenses users' artist lists and concatenate them together
+    var compileArtists = function(callback) {
+      FB.api(eventID + '?fields=attending', function(response){
+        createGuestList(response);
+        var counter = 0;
+        for (userIndex = 0; userIndex < numGuests; userIndex++){
+            // for every user you generate an array of its artists and condense them, then concatenating 
+            // the arrays into one big array
+            getArtistsFromUser(guestArray[userIndex], function (artistArray_response) {
+              // console.log(artistArray_response);
+              artistArrayCompiled = artistArrayCompiled.concat(condenseArray(artistArray_response));
+              counter++;
+              if (counter === numGuests) {
+                callback(artistArrayCompiled);
+              }
+            });
+          }
+      });
+    };
 
 
-		timeLineLayer.add(timeLine);
-		stage.add(layer1);
-		stage.add(layer2);
-		stage.add(timeLineLayer);
 
-      	var trans = null;
+      //prompts user to select which event they are hosting
+    $('#button').click( function (event) {
+        eventID = eventArray[eventIndex].id;
+        var artistArrayCompiled = new Array();
 
-    	document.getElementById('start').addEventListener('click', function() {
-	        timeLine.setAttrs({
-	          x: 0
-	        });
+        compileArtists (function () {
+          createArtistMap();
+          mapToTopTen();
+          console.log(topTenArtists);
+        });
 
-  		    trans = timeLine.transitionTo({
-    	      x: 700,
-	          duration: 5
-        	});
-	    }, false);
+//        FB.api(eventID + '?fields=attending', function(response) {
+//           createGuestList(response);
 
-	    document.getElementById('submit').addEventListener('click', function() {
-        	if(trans) {
-          	trans.stop();
- 	       }
+        // FB.api(eventID + '?fields=attending', function(response){
+        //   createGuestList(response);
+        //   console.log(guestArray);
+        //   var artistArrayCompiled = new Array();
+        //   for (userIndex = 0; userIndex < numGuests; userIndex++){
+        //     // for every user you generate an array of its artists and condense them, then concatenating 
+        //     // the arrays into one big array
+        //     getArtistsFromUser(guestArray[userIndex], function (artistArray_response) {
+        //       artistArrayCompiled.concat(condenseArray(artistArray));
+        //     });
+        //   }
+        // })
 
- 	       //Creates output array of boolean
+/*
+                      if (j >= Math.min(50, response.data.length)) {
+                        console.log("artistArray = "+ artistArray);
+                        condenseAndCompileList();
+                        createArtistMap();
+                        mapToTopTen();
 
-		  	var out = new Array(16);
-		  	for (var i = 0; i < 16; i++) {
-		   		out[i] = new Array(6);
-		  	}
+                        console.log(topTenArtists);
+                      } */
+
+      });
+
+      // Worst function ever written.
+      function processEvents(response) {
+			  console.log(response);
+
+        var i;
+			  var initEventArray = response.events.data;
+        var d = new Date();
+
+        var curr_day = d.getDate().toString();
+        var curr_mon = d.getMonth() + 1;
+        var curr_yea = (d.getYear() + 1900).toString();
+        var curr_mon2;
+
+        // Because truncating leading zeroes is stupud.
+        if (curr_mon < 10) {
+          curr_mon2 = "0".concat(curr_mon);
+        } else {
+          curr_mon2 = curr_mon;
+        }
+      
+        var curr_num = parseInt((curr_yea.concat(curr_mon2)).concat(curr_day), 10);
+
+        for (i = 0; i < initEventArray.length; i++) {
+
+            var ces = initEventArray[i].start_time;
+
+            var even_day = ces.substring(8, 10);
+            var even_mon = ces.substring(5, 7);
+            var even_yea = ces.substring(0, 4);
+
+            var even_num = parseInt((even_yea.concat(even_mon)).concat(even_day), 10);
+
+            if (curr_num <= even_num) {
+              eventArray.push(initEventArray[i]);
+            }
+        }
+
+			  console.log(eventArray);
+
+			  $(eventArray).each( function(index) {
+				  $('#eventList').append($('<li id=' + index + '></li>').html(this.name));
+			  });
+
+			  $('#eventList').click(function(event) {
+				  eventIndex = event.target.id;
+				  alert(eventIndex);
+			});
+		};
+   }
+
+  function Map()
+    {
+        // members
+        this.keyArray = new Array(); // indices
+        this.valArray = new Array(); // artist
+
+        // methods
+        this.put = put;
+        this.get = get;
+        this.size = size;  
+        this.clear = clear;
+        this.keySet = keySet;
+        this.valSet = valSet;
+        this.showMe = showMe;   // returns a string with all keys and values in map.
+        this.findIt = findIt;
+        this.remove = remove;
+    }
+
+    function put( key, val )
+    {
+        var elementIndex = this.findIt( key );
+        
+        if( elementIndex == (-1) )
+        {
+            this.keyArray.push( key );
+            this.valArray.push( val );
+        }
+        else
+        {
+            this.valArray[ elementIndex ] = val + 1;
+        }
+    }
+
+    function get( key )
+    {
+        var result = null;
+        var elementIndex = this.findIt( key );
+
+        if( elementIndex != (-1) )
+        {   
+            result = this.valArray[ elementIndex ];
+        }  
+        
+        return result;
+    }
+
+    function remove( key )
+    {
+        var result = null;
+        var elementIndex = this.findIt( key );
+
+        if( elementIndex != (-1) )
+        {
+            this.keyArray = this.keyArray.removeAt(elementIndex);
+            this.valArray = this.valArray.removeAt(elementIndex);
+        }  
+        
+        return ;
+    }
+
+    function size()
+    {
+        return (this.keyArray.length);  
+    }
+
+    function clear()
+    {
+        for( var i = 0; i < this.keyArray.length; i++ )
+        {
+            this.keyArray.pop(); this.valArray.pop();   
+        }
+    }
+
+    function keySet()
+    {
+        return (this.keyArray);
+    }
+
+    function valSet()
+    {
+        return (this.valArray);   
+    }
+
+    function showMe()
+    {
+        var result = "";
+        
+        for( var i = 0; i < this.keyArray.length; i++ )
+        {
+            result += "Key: " + this.keyArray[ i ] + "\tValues: " + this.valArray[ i ] + "\n";
+        }
+        return result;
+    }
+
+    function findIt( key )
+    {
+        var result = (-1);
+
+        for( var i = 0; i < this.keyArray.length; i++ )
+        {
+            if( this.keyArray[ i ] == key )
+            {
+                result = i;
+                break;
+            }
+        }
+        return result;
+    }
+
+    function removeAt( index )
+    {
+      var part1 = this.slice( 0, index);
+      var part2 = this.slice( index+1 );
+
+      return( part1.concat( part2 ) );
+    }
+    Array.prototype.removeAt = removeAt;
 
 
- 	       	for (var i = 0; i < 16; i++) {
- 	       		for (var j = 0; j < 6; j++) {
- 	       			out[i][j] = {
- 	       				col : i,
- 	       				row : j,
- 	       				isOn : boxes[i+4][j].isOn 	       				
- 	       			}
- 	       		}
- 		    }
+    //puts events into array
+    function processEvents(response) {
+      console.log(response);
+      console.log("Process Events Called");
+      numEvents = response.events.data.length;
+      console.log(numEvents);
+      for (var i = 0; i < numEvents; i++) {
+        eventArray[i] = response.events.data[i];
+      }
+      console.log(eventArray);
+    };
 
- 	       var jsonOut = JSON.stringify(out);
- 	       console.log(jsonOut);
+    // puts all guests 
+    function createGuestList(response) {
+      console.log(response);
+      numGuests = response.attending.data.length;
+      console.log(numGuests);
+      for (var i = 0; i < numGuests; i++) {
+        guestArray[i] = response.attending.data[i].id;
+      }
+      console.log(guestArray);
+    }
 
-      	}, false);
+    // pulls last 50 music (max) listens from attendees
+    function createArtistList(response) {
+      //response contains list of songs played
+      console.log("createArtistList is called");
+      var index = 0;
+      var j = 0;
+        while (j < Math.min(50, response.data.length)) {
+          // pulls the artist
+          var songID = response.data[j].data.song.id;
 
-	</script>
+          if (response.data[j].data.musician && response.data[j].data.musician.title) {
+            artistArray[j] = response.data[j].data.musician.title;
+            j++;
+          }
+          if (j === response.data.length) {
+            j = 100;
+          }
+        }
+      // console.log("artistArray = "+ artistArray);
+      // condenseAndCompileList();
+      // createArtistMap();
+      // mapToTopTen();
 
-</body>
+      // console.log(topTenArtists);
+
+
+    }
+
+    function condenseArray(artistArray) {
+      // array of 50 possibly repeating artists need to condense
+      for (var i = 0; i < artistArray.length; i++) {
+        for (var j = i+1; j < artistArray.length; j++) {
+          while(j < artistArray.length && artistArray[i] == artistArray[j]) {
+            artistArray.splice(j, 1);
+          }
+        }
+      }
+      return artistArray;
+    }
+        // at this point artistArray should be condensed
+
+
+        // var artistRepeated = false;
+        // for (var j = 0; j < artistArrayCondensed.length; j++) {
+        //   if (artistArray[i] == artistArrayCondensed[j]) {
+        //     artistRepeated = true;
+        //   }
+        // }
+        // if (!artistRepeated) {
+        //   artistArray[i] = artistArrayCondensed[index];
+        //   index++;
+        // }
+      
+
+    function createArtistMap(){
+      //add artists to map
+      var count = 0;
+      for (var i = 0; i < artistArrayCompiled.length; i++) {
+        for (var j = i+1; j < artistArrayCompiled.length; j++) {
+          while (j < artistArrayCompiled.length && artistArrayCompiled[i] == artistArrayCompiled[j]) {
+            count++;
+            artistArrayCompiled.splice(j,1);
+          }
+        }
+        artistMap.put(i, new Array(artistArrayCompiled[i], count));
+      }
+
+      console.log(artistMap);
+      // now we have a map with key (0,1,2,3) and value [artist, count]
+//      console.log(artistMap.showMe);
+    }
+
+
+    function mapToTopTen() {
+      // sorts map by popularity
+      var mapSorted = false;
+      while (!mapSorted) {
+        mapSorted = true;
+        for (var i = 0; i < artistMap.size-1; i++) {
+          var value1 = artistMap.get(i);
+          var value2 = artistMap.get(i+1);
+          if (value1[1] < value2[1]) {
+            artistMap.put(i, value2);
+            artistMap.put(i+1, value1);
+            mapSorted = false;
+          }
+        }
+      }
+      //takes ten most popular artists names and put it into an array in order
+      for (var i = 0; i < 1; i++) {
+        var singleArtistMap = artistMap.get(i);
+        topTenArtists[i] = singleArtistMap[0];
+      }
+    }
+
+    </script>
+
+    <h1>MusiQue</h1>
+
+    <u1 id="eventList"> </u1>
+
+
+    <fb:login-button show-faces="true" width="500" max-rows="1" 
+		perms="user_likes, friends_likes, user_actions.music, friends_actions.music, user_events, friends_events"></fb:login-button>
+
+    <button id='button'> Click Me! </button>
+
+  </body>
 </html>
