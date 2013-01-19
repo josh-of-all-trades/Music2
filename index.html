@@ -13,11 +13,13 @@
 	Awesome App
 </head>
 
-<body bgcolor = "black">
-
+<body bgcolor= "black">
 
 	<style type="text/css">
-		#container { position:absolute; left: 17%; top:50%; height:13em; width: 710px; margin-top:-5em ; background-color: gray; padding: 25px}
+		#container {
+			position:absolute; left: 17%; top:50%; height:13em; width: 710px; margin-top:-5em ; 
+			background-color: gray; 
+			padding: 25px}
 		#buttons {padding-bottom: 10px}
 	</style>
 
@@ -66,6 +68,8 @@
         		// request last bar from port
         		if (true) {
 	        		boxes[i][j] = new Kinetic.Rect({
+							col : i,
+							row : j,
 		        			isOn : false,
 		        			x: i * 35,
 		        			y: j * 25,
@@ -80,28 +84,32 @@
         		}
 	        }
     	}
-
+    	var greyStep = 151515;
 	  	// Creates an array of objects containing a boolean and kinetic rectangles
 		for(var i = 4; i < 20; i++) {
 			for (var j = 0; j < 6; j++) {
 				boxes[i][j] = new Kinetic.Rect({
+						col : i,
+						row : j,
 						isOn : false,
 						x: /*Math.floor((i)/ 4) * 7 + */(i * 35),
 						y: j * 25,
 						width: 35,
 						height: 25,
-						fill: 'black',
+						fill: '#' + (Math.floor((i)/4) * greyStep),
 						strokeWidth: 3,
 						stroke: 'gray',
 						id: 'box' + i.toString() + j.toString()
 					})
 
 				boxes[i][j].on('click', function() {
+					console.log("this: " + this.id);
+					console.log("col: " + this.col);
+					console.log("width: " + this.width);
 					if (this.isOn) {
 						this.isOn = false;
-						this.setFill('black');
+						this.setFill('#' + (Math.floor((this.attrs.col)/4) * greyStep));
 					} else {
-						console.log("I'M ON");
 						this.isOn = true;
 				        this.setFill('red');
 					}
@@ -117,7 +125,8 @@
 					if (this.isOn) {
 						this.setFill('red');
 					} else {
-				        this.setFill('black');
+						console.log(this.attrs.col);
+				        this.setFill('#' + (Math.floor((this.attrs.col)/4) * greyStep));
 					}
 	   	    		layer1.draw();
 	   		   	});
