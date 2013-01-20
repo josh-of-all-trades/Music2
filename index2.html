@@ -10,6 +10,7 @@
 	<!-- base64 packages -->
 	<script src="./inc/Polyfill/Base64.js" type="text/javascript"></script>
 	<script src="./inc/base64binary.js" type="text/javascript"></script>
+
 	Awesome App
 </head>
 
@@ -17,7 +18,7 @@
 
 	<style type="text/css">
 		#container {
-			position:absolute; left: 18%; top:30%; height:430px; width: 750px; margin-top:-5em ; background-color: #333333; padding-left: 40px; padding-top: 35px; box-shadow: 1px 1px 10px #777777;
+			position:absolute; left: 18%; top:30%; height:440px; width: 750px; margin-top:-5em ; background-color: #333333; padding-left: 40px; padding-top: 35px; box-shadow: 1px 1px 10px #777777;
 }}
 		#buttons {padding-bottom: 10px}
 	</style>
@@ -25,16 +26,15 @@
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
 
 	<div id="container">
-		<div id="buttons">
-	  		<button type="button" id="start" class="buttons" style="height: 55px; width: 55px">
-		    	<img src="img/start.png" style=" height: 40px ; width: 40 px">
+		<div id="buttons" style="padding-bottom:5px">
+	  		<button type="button" id="start" class="buttons" style="margin: 0px;height: 60px; width: 60px; background:transparent">
+			    <img src="img/start.png" style=" height: 45px ; padding-top: 4px">
 			</button>
-			<!--
-	    	<button type="button" id="stop" style="height: 55px; width: 55px">
-		    	<img src="img/stop.png" style="height: 40px ; width: 40 px">
-			</button> -->
-			<button type ="button" id="submit" class="buttons" style="height: 55px; width: 100px">
-				<img src ="img/submit.png" style="height: 40px; width: 90 px">
+	  		<button type="button" id="restart" class="buttons" style="margin: 0px;height: 60px; width: 60px; background:transparent">
+			    <img src="img/restart.png" style=" height: 45px; padding-top: 4px">
+			</button>
+	  		<button type="button" id="submit" class="buttons" style="margin: 0px;height: 60px; width: 140px; background:transparent">			    
+				<img src ="img/submit.png" style="height: 45px; padding-top: 4px"> 
 			</button>
 		</div>
 
@@ -204,13 +204,26 @@
 	    }, false);
 
 
+    	document.getElementById('restart').addEventListener('click', function() {
+    		for (var i = 4; i < 20; i++) {
+    			for (var j= 0; j < range; j++) {
+    				if (boxes[i][j].isOn) {
+    					boxes[i][j].isOn = false;
+    					boxes[i][j].setFill('#' + ((Math.floor(i/4) * greyStep) + (j * 20000) - ((Math.floor(i/4)*200))));
+    				}
+    			}
+    		}
+			layer1.draw();
+			stage.add(layer1);
+			stage.add(timeLineLayer);
+    	}, false);
 
 	    document.getElementById('submit').addEventListener('click', function() {
         	if(trans) {
           	trans.stop();
  	       }
 
- 	       //Creates output array of boolean
+ 	       //Creates output array of boolean and coordinates
 
 		  	var out = new Array(16);
 		  	for (var i = 0; i < 16; i++) {
@@ -228,9 +241,27 @@
  	       		}
  		    }
 
- 	       var jsonOut = JSON.stringify(out);
- 	       console.log(jsonOut);
+ 	       	var jsonOut = JSON.stringify(out);
+ 	       	
 
+                    $.ajax({
+                        url: "/",
+                        type: "POST",
+                        port: 5000,
+                        contentType: "application/json",
+                        data: jsonOut,
+                        success: function (data, textStatus, jqXHR) {
+                        	console.log("SUCCESS");
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                        	console.log("FAILED");
+                        }
+                    });
+
+
+
+
+ 	       console.log(jsonOut);
       	}, false);
 
       	function init() {
