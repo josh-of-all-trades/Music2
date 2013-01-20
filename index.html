@@ -193,17 +193,9 @@
 
 	    document.getElementById('submit').addEventListener('click', function() {
         	if(trans) {
-          	trans.stop();
- 	       }
+          		trans.stop();
+ 	        }
 
-
- 	        $.get('/test', {
- 	        		message: "lol"
-				}).complete(function(response) {
-					console.log(response);
-				});
-
- 	       //Creates output array of boolean
 
 		  	var out = new Array(16);
 		  	for (var i = 0; i < 16; i++) {
@@ -222,6 +214,14 @@
  		    }
 
  	       var jsonOut = JSON.stringify(out);
+
+ 	       	//Creates output array of boolean
+ 	        $.get('/pushJSONtoServer', {
+	        	track: jsonOut
+			}).success(function(response) {
+				console.log(response);
+			});
+
  	       console.log(jsonOut);
 
       	}, false);
