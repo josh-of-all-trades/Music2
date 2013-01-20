@@ -6,30 +6,17 @@ MusicQue2.0 - Make <i>beautiful</i> music with your friends!
 </head>
 
 <body>
-<p>
-<font color="#000000"></font>
-<font size="14"></font>
-<font face="Helvetica"></font>
-Hey!  Are you ready for a fun game of <b>MusicQue2.0</b>? Here are the rules of the game!<br />
-All players get 4 bars to create and every player can only see the last bar of the person before them.<br />
-Work together to make a track and then post it to SoundCloud to share on Facebook!
-</p>
 
 <!-- facebook login -->
   <!-- This quickstart page uses jQuery: http://api.jquery.com/ -->
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 </head>
 <body>
+
+
+
   <div id="fb-root"></div>
   <script>
-    /* This quickstart page tries to make it simpler to get started with
-     * facebook login. Depending on the login status, it automatically
-     * shows and hides elements with class "loggedIn" and "loggedOut",
-     * and automatically updates the src of images with class "profilePic".
-     * In addition, this quickstart page defines two possibly useful
-     * functions, setProfilePic and getLoggedInUserId, whose definitions
-     * follow:
-     */
 
     var setProfilePic = function(imgElem, userId) {
       var profilePicSrc = 'http://graph.facebook.com/' + userId + '/picture?type=square';
@@ -45,79 +32,25 @@ Work together to make a track and then post it to SoundCloud to share on Faceboo
       return authResponse.userID;
     };
 
-    /* That's all you need to know to get started! You can now edit the
-     * following variables and skip straight to building your app's logic.
-     *
-     * APP SETUP
-     * 1) go to http://developers.facebook.com/apps ; log in and sign up as needed
-     * 2) click "create new app," give it a name and click continue
-     *    ...once the app is created, you'll be redirected to its settings page
-     * 3) check "Website with Facebook Login" and enter "http://localhost:5000" as the Site URL
-     * 4) click "save changes"
-     * 5) copy the App ID from the settings page and paste it below
-     * 6) serve this file on http://localhost:5000
-     *    one way to do this is by running the following command from this directory:
-     *    python -m SimpleHTTPServer 5000
-     * 7) consider reading HOW TO RUN A NODE SERVER and HOW TO DEPLOY TO HEROKU below
-     */
     var facebookAppID = "202829419855573";
-    if (facebookAppID == "YOUR_APP_ID")
-      alert("You need to set facebookAppID!"
-        + "\nSearch for 'APP SETUP' in the html file.");
 
-    /* HOW TO RUN A NODE SERVER
-     * 1) download and install node: http://nodejs.org/download/
-     * 2) run `npm install` in this git repository's root directory (which contains package.json)
-     *    ...this installs all the dependencies needed by the server
-     * 3) run `node web.js` from the root directory
-     *    ...this runs a skeletal server that simply serves files from the static directory
-     *       (for example, static/index.template.html is available at http://localhost:5000/index.template.html)
-     *    ...you can change the port by running `PORT=8888 node web.js` or similar
-     * 4) You can modify web.js to add more complicated logic to the server
-     *    - http://nodejs.org/api/
-     *    - http://expressjs.com/guide.html
-     *    - https://devcenter.heroku.com/articles/nodejs
-     *
-     * HOW TO DEPLOY TO HEROKU
-     * 1) these instructions assume you want to deploy a node server
-     *    search https://devcenter.heroku.com/ for instructions if not
-     * 2) create an account (http://www.heroku.com/) and install the command line client (https://github.com/heroku/heroku#readme)
-     * 3) run `heroku apps:create` at this git repository's root
-     *    ...you should see output like this
-     *      Creating peaceful-harbor-6881... done, stack is cedar
-     *      http://peaceful-harbor-6881.herokuapp.com/ | git@heroku.com:peaceful-harbor-6881.git
-     *      Git remote heroku added
-     *    ...the "Git remote heroku added" line is important! If you don't see it,
-     *       double check that you ran the command at the repository root
-     * 4) run `git push heroku +HEAD:master` to deploy the current git HEAD to heroku
-     *    ...you can visit your app at the link printed when you ran `heroku apps:create`
-     *    ...IMPORTANT! Be sure you run `git status` and know what's in your git HEAD!
-     *       If you just blindly run the deployment command you might miss changes for
-     *       which you haven't yet run `git commit`.
-     * 5) add the deployment url to your app so facebook knows it's ok to let that domain
-     *    use your app id. If you want to do this without replacing the http://localhost:5000
-     *    setting, one hack is to enter the deployment url under the "Mobile Web" setting.
-     */
-
-    /* This generic login/logout code must be manually tested for these cases:
-     * 1) load page when not logged into fb and have auth'd app, then click "login"
-     * 2) load page when logged into fb but haven't auth'd app, then click "login"
-     * 3) load page when not logged into fb and haven't auth'd app, then click "login"
-     * 4) load page when logged into fb and have auth'd the app
-     * 5) bug: load page when logged in + auth'd, then log out of fb in a separate tab,
-     *         then reload page and click "login"
-     *    - tried added channel.html (see https://developers.facebook.com/docs/howtos/login/getting-started/#step2)
-     *    - tried adding fb-root div, which was missing
-     *    - decided I don't care for now
-     *
-     * The expected behavior includes:
-     * a) elements with class "loggedIn" and "loggedOut" are displayed/hidden
-     * b) img elements with class "profilePic" have their src set properly
-     */
     var log = function(msg) {
       if (console && console.log)
         console.log(msg);
     };
+
+
+ 
+    var sendRequestToRecipients = function() {
+      FB.ui({method: 'apprequests',
+        message: 'My Great Request',
+      }, function(response) {
+        console.log(response);
+      });
+    }
+
+
+
     var loggedOutUserId = 1; // a hack
     var onStatusChange = function(response) {
       var loggedIn = response.status == 'connected';
@@ -159,7 +92,12 @@ Work together to make a track and then post it to SoundCloud to share on Faceboo
        js.src = "//connect.facebook.net/en_US/all.js";
        ref.parentNode.insertBefore(js, ref);
      }(document));
+
+
+
   </script>
+
+
 
   <!-- YOUR_APP_LOGIC -->
   <center>
@@ -171,37 +109,34 @@ Work together to make a track and then post it to SoundCloud to share on Faceboo
       <!-- see https://developers.facebook.com/tools/explorer to test different API calls with different permissions -->
       <!-- see https://developers.facebook.com/docs/reference/javascript/FB.api/ for how to make API calls in javascript -->
       <!-- to log out, visit https://www.facebook.com/settings?tab=applications and remove the app -->
+
+
     </div>
     <div class="loggedIn">
     </div>
+
+
+
+<p>
+<font color="#000000"></font>
+<font size="14"></font>
+<font face="Helvetica"></font>
+Hey!  Are you ready for a fun game of <b>MusicQue2.0</b>? Here are the rules of the game!<br />
+All players get 4 bars to create and every player can only see the last bar of the person before them.<br />
+Work together to make a track and then post it to SoundCloud to share on Facebook!
+
+</p>
+
+  <div id="container">
+    <div id="buttons">
+        <button type="button" id="invite" class="buttons" style="height: 55px; width: 55px">
+        INVITE FRIENDS!
+      </button>
+   </div>
+
+
+
   </center>
-
-<script>
-function sendRequestViaMultiFriendSelector() {
-    FB.ui({
-        method: 'apprequests',
-        message: "This message is displayed in invitation"
-    },send_wall_invitation);
-
-}
-
-function send_wall_invitation(response) {
-   // alert(response.to);
-    var send_invitation_url=base_url+'send_invitation';
-    jQuery.ajax({
-        url:send_invitation_url,
-        data:{
-            to:response.to
-            },
-        dataType:"json",
-        type: 'POST',
-        success: function(data){
-//            alert("");
-        }
-
-    })
-}
-</script>
 
 </body>
 </html>
