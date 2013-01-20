@@ -17,9 +17,8 @@
 
 	<style type="text/css">
 		#container {
-			position:absolute; left: 17%; top:50%; height:13em; width: 710px; margin-top:-5em ; 
-			background-color: gray; 
-			padding: 25px}
+			position:absolute; left: 18%; top:30%; height:430px; width: 750px; margin-top:-5em ; background-color: #333333; padding-left: 40px; padding-top: 35px; box-shadow: 1px 1px 10px #777777;
+}}
 		#buttons {padding-bottom: 10px}
 	</style>
 
@@ -72,7 +71,9 @@
         	for (var j = 0; j < range; j++) {
 
         		// request last bar from port
-        		if (true) {
+
+        		var alreadyOn = false;
+        		if ((i!=2 || j !=2) && (i!=0 || j != 8)) {
 	        		boxes[i][j] = new Kinetic.Rect({
 							col : i,
 							row : j,
@@ -81,15 +82,30 @@
 		        			y: j * 25,
 		        			width: 35,
 		        			height: 25,
-		        			fill: 'blue',
-		        			stroke:'gray',
+		        			fill: '#444444',
+		        			stroke:'#333333',
 		        			strokeWidth:3,
 		        			id: 'box' + i.toString() + j.toString()
 		        	})
-        		layer2.add(boxes[i][j]);
+        		} else {
+	        		boxes[i][j] = new Kinetic.Rect({
+							col : i,
+							row : j,
+		        			isOn : true,
+		        			x: i * 35,
+		        			y: j * 25,
+		        			width: 35,
+		        			height: 25,
+		        			fill: '#810035',
+		        			stroke:'#333333',
+		        			strokeWidth:3,
+		        			id: 'box' + i.toString() + j.toString()
+		        	})
         		}
+	        	layer2.add(boxes[i][j]);
 	        }
     	}
+
     	var greyStep = 151515;
 	  	// Creates an array of objects containing a boolean and kinetic rectangles
 		for(var i = 4; i < 20; i++) {
@@ -102,9 +118,9 @@
 						y: j * 25,
 						width: 35,
 						height: 25,
-						fill: '#' + (Math.floor((i)/4) * greyStep),
+						fill: '#' + ((Math.floor((i)/4) * greyStep) + (j * 20000) - ((Math.floor((i)/4)) * 200)),
 						strokeWidth: 3,
-						stroke: 'gray',
+						stroke: '#333333',
 						id: 'box' + i.toString() + j.toString()
 					})
 
@@ -114,10 +130,10 @@
 					console.log("width: " + this.width);
 					if (this.isOn) {
 						this.isOn = false;
-						this.setFill('#' + (Math.floor((this.attrs.col)/4) * greyStep));
+						this.setFill('#' + ((Math.floor((this.attrs.col)/4) * greyStep) + (this.attrs.row * 20000) - ((Math.floor((this.attrs.col)/4))*200)));
 					} else {
 						this.isOn = true;
-				        this.setFill('red');
+				        this.setFill('#ff670e');
 					}
 	   	    		layer1.draw();
 	   		   	});
@@ -129,10 +145,9 @@
 
 				boxes[i][j].on('mouseout', function() {
 					if (this.isOn) {
-						this.setFill('red');
+						this.setFill('#ff670e');
 					} else {
-						console.log(this.attrs.col);
-				        this.setFill('#' + (Math.floor((this.attrs.col)/4) * greyStep));
+						this.setFill('#' + ((Math.floor((this.attrs.col)/4) * greyStep) + (this.attrs.row * 20000) - ((Math.floor((this.attrs.col)/4))*200)));
 					}
 	   	    		layer1.draw();
 	   		   	});
@@ -229,6 +244,6 @@
 	    }
 
 	</script>
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br>
 </body>
 </html>
