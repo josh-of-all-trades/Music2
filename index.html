@@ -1,6 +1,7 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 <head>
+<<<<<<< HEAD
 	 <script src="./js/MIDI/audioDetect.js" type="text/javascript"></script>
 	<script src="./js/MIDI/loadPlugin.js" type="text/javascript"></script>
 	<script src="./js/MIDI/Plugin.js" type="text/javascript"></script>
@@ -238,5 +239,298 @@
 
 	</script>
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+=======
+<title>MusicQue2.0</title>
+MusicQue2.0 - Make <i>beautiful</i> music with your friends!
+</head>
+
+<body bgcolor = "black">
+
+<!-- facebook login -->
+  <!-- This quickstart page uses jQuery: http://api.jquery.com/ -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+</head>
+<body>
+  <div id="fb-root"></div>
+  <script>
+    /* This quickstart page tries to make it simpler to get started with
+     * facebook login. Depending on the login status, it automatically
+     * shows and hides elements with class "loggedIn" and "loggedOut",
+     * and automatically updates the src of images with class "profilePic".
+     * In addition, this quickstart page defines two possibly useful
+     * functions, setProfilePic and getLoggedInUserId, whose definitions
+     * follow:
+     */
+
+    var setProfilePic = function(imgElem, userId) {
+      var profilePicSrc = 'http://graph.facebook.com/' + userId + '/picture?type=square';
+      imgElem.attr('src', profilePicSrc);
+      return imgElem;
+    };
+
+    var getLoggedInUserId = function() {
+      var authResponse = FB.getAuthResponse();
+      if (!authResponse)
+        throw "Oops, no auth response. Are you sure you're calling this code within a .loggedIn element?"
+          + "\n It's also possible that the user logged out in another tab.";
+      return authResponse.userID;
+    };
+
+    /* That's all you need to know to get started! You can now edit the
+     * following variables and skip straight to building your app's logic.
+     *
+     * APP SETUP
+     * 1) go to http://developers.facebook.com/apps ; log in and sign up as needed
+     * 2) click "create new app," give it a name and click continue
+     *    ...once the app is created, you'll be redirected to its settings page
+     * 3) check "Website with Facebook Login" and enter "http://localhost:5000" as the Site URL
+     * 4) click "save changes"
+     * 5) copy the App ID from the settings page and paste it below
+     * 6) serve this file on http://localhost:5000
+     *    one way to do this is by running the following command from this directory:
+     *    python -m SimpleHTTPServer 5000
+     * 7) consider reading HOW TO RUN A NODE SERVER and HOW TO DEPLOY TO HEROKU below
+     */
+    var facebookAppID = "202829419855573";
+    if (facebookAppID == "YOUR_APP_ID")
+      alert("You need to set facebookAppID!"
+        + "\nSearch for 'APP SETUP' in the html file.");
+
+    /* HOW TO RUN A NODE SERVER
+     * 1) download and install node: http://nodejs.org/download/
+     * 2) run `npm install` in this git repository's root directory (which contains package.json)
+     *    ...this installs all the dependencies needed by the server
+     * 3) run `node web.js` from the root directory
+     *    ...this runs a skeletal server that simply serves files from the static directory
+     *       (for example, static/index.template.html is available at http://localhost:5000/index.template.html)
+     *    ...you can change the port by running `PORT=8888 node web.js` or similar
+     * 4) You can modify web.js to add more complicated logic to the server
+     *    - http://nodejs.org/api/
+     *    - http://expressjs.com/guide.html
+     *    - https://devcenter.heroku.com/articles/nodejs
+     *
+     * HOW TO DEPLOY TO HEROKU
+     * 1) these instructions assume you want to deploy a node server
+     *    search https://devcenter.heroku.com/ for instructions if not
+     * 2) create an account (http://www.heroku.com/) and install the command line client (https://github.com/heroku/heroku#readme)
+     * 3) run `heroku apps:create` at this git repository's root
+     *    ...you should see output like this
+     *      Creating peaceful-harbor-6881... done, stack is cedar
+     *      http://peaceful-harbor-6881.herokuapp.com/ | git@heroku.com:peaceful-harbor-6881.git
+     *      Git remote heroku added
+     *    ...the "Git remote heroku added" line is important! If you don't see it,
+     *       double check that you ran the command at the repository root
+     * 4) run `git push heroku +HEAD:master` to deploy the current git HEAD to heroku
+     *    ...you can visit your app at the link printed when you ran `heroku apps:create`
+     *    ...IMPORTANT! Be sure you run `git status` and know what's in your git HEAD!
+     *       If you just blindly run the deployment command you might miss changes for
+     *       which you haven't yet run `git commit`.
+     * 5) add the deployment url to your app so facebook knows it's ok to let that domain
+     *    use your app id. If you want to do this without replacing the http://localhost:5000
+     *    setting, one hack is to enter the deployment url under the "Mobile Web" setting.
+     */
+
+    /* This generic login/logout code must be manually tested for these cases:
+     * 1) load page when not logged into fb and have auth'd app, then click "login"
+     * 2) load page when logged into fb but haven't auth'd app, then click "login"
+     * 3) load page when not logged into fb and haven't auth'd app, then click "login"
+     * 4) load page when logged into fb and have auth'd the app
+     * 5) bug: load page when logged in + auth'd, then log out of fb in a separate tab,
+     *         then reload page and click "login"
+     *    - tried added channel.html (see https://developers.facebook.com/docs/howtos/login/getting-started/#step2)
+     *    - tried adding fb-root div, which was missing
+     *    - decided I don't care for now
+     *
+     * The expected behavior includes:
+     * a) elements with class "loggedIn" and "loggedOut" are displayed/hidden
+     * b) img elements with class "profilePic" have their src set properly
+     */
+    var log = function(msg) {
+      if (console && console.log)
+        console.log(msg);
+    };
+    var loggedOutUserId = 1; // a hack
+    var onStatusChange = function(response) {
+      var loggedIn = response.status == 'connected';
+      if (loggedIn) {
+        log("the user is logged in and has authenticated your"
+          + " app, and response.authResponse supplies"
+          + " the user's ID, a valid access token, a signed"
+          + " request, and the time the access token"
+          + " and signed request each expire");
+      } else if (response.status === 'not_authorized') {
+        log("the user is logged in to Facebook,"
+          + " but has not authenticated your app");
+      } else {
+        log("the user isn't logged in to Facebook.");
+      }
+      updateLoggedInHtml(loggedIn, loggedIn ? response.authResponse.userID : loggedOutUserId);
+    }
+    var updateLoggedInHtml = function(isLoggedIn, userId) {
+      $('.loggedIn').toggle(isLoggedIn);
+      $('.loggedOut').toggle(!isLoggedIn);
+      setProfilePic($('img.profilePic'), userId);
+    };
+    $(function() { updateLoggedInHtml(false, loggedOutUserId); });
+    // Load the sdk asynchronously after setting the callback function.
+    // The docs say that this <script> should be placed just after <body>.
+    window.fbAsyncInit = function() {
+      FB.Event.subscribe('auth.statusChange', onStatusChange);
+      FB.init({
+        appId      : facebookAppID, // App ID
+        status     : true, // check login status
+        cookie     : true, // enable cookies to allow the server to access the session
+        xfbml      : true  // parse XFBML
+      });
+    };
+    (function(d){
+       var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+       if (d.getElementById(id)) {return;}
+       js = d.createElement('script'); js.id = id; js.async = true;
+       js.src = "//connect.facebook.net/en_US/all.js";
+       ref.parentNode.insertBefore(js, ref);
+     }(document));
+  </script>
+
+  <!-- YOUR_APP_LOGIC -->
+  <center>
+
+    <div id="intro" align="center" style="width:550px; position:absolute; left: 17%; top:25%; height:13em; width: 710px; margin-top:-5em ; ">
+  <p align="center">
+  <font color="#FFFFFF" size = "7" face="Helvetica">
+  Hey!  Are you ready for a game of <b>MusicQue2.0</b>? 
+  </font>
+  <font color="#FFFFFF" size = "4" face="Helvetica">
+  <br />
+  <br />
+  Each player gets 4 bars to create, and can only <br/> see the last bar created by the previous player.<br /><br/>
+  Work together to make a track and then post it to <br/>SoundCloud to share on Facebook!
+  </font>
+  </p>
+</div>
+
+
+      <script>
+      // Creates a stage
+          var stage = new Kinetic.Stage({
+            container: 'container',
+            align: 'center',
+            width: 500,
+            height: 100
+          });
+
+          var layer = new Kinetic.Layer();
+
+          var imageObj = new Image();
+          imageObj.onload = function() {
+            var yoda = new Kinetic.Image({
+              x: 140,
+              y: stage.getHeight() / 2 - 59,
+              image: imageObj,
+              width: 106,
+              height: 118
+            });
+
+
+          var filteredYoda = new Kinetic.Image({
+            x: 320,
+            y: stage.getHeight() / 2 - 59,
+            image: imageObj,
+            width: 106,
+            height: 118
+          });
+
+          // add the shape to the layer
+          layer.add(yoda);
+          layer.add(filteredYoda);
+
+          // add the layer to the stage
+          stage.add(layer);
+
+          // apply grayscale filter to second image
+          filteredYoda.applyFilter(Kinetic.Filters.Grayscale, null, function() {
+            layer.draw();
+          });
+        };
+        imageObj.src = "img/mike.jpg";
+        stage.add(layer);
+      </script>
+
+    <div class="currGames" id="games" align="center" style="width: 400px; position:absolute; left:24%; top:52%; height:110px; width:500px; padding: 20px; background:#333333">
+      <div id="curr" align="center">
+        <font color="#888888" size = "3" face="Helvetica">
+        Current Games:<br/>
+      </font>
+
+
+        <a href = "index2.html">
+          <img src="img/josh.jpg">
+        </a>
+        <img src="img/mike.jpg" style="opacity:0.4">
+        <img src="img/shadia.jpg" style="opacity:0.4">
+        <a href = "index2.html">
+          <img src="img/aviva.jpg">
+        </a>
+        <img src="img/paolo.jpg" style="opacity:0.4">
+        <p align="left">
+        <font color="#FFFFFF" size = "2" face="Helvetica">
+      </p>
+    </font>
+      </div>
+
+    </div>
+   <div class="profPic" id= "dp" align="center" style="width:400 px; position: absolute; left: 39%; top: 80%; height:4em; width: 200px; padding:20px">
+    <div class="fb-login-button" data-show-faces="true" data-width="200" data-max-rows="1"></div>
+  </div>
+ 
+</center>
+<script> /*
+    <div class="loggedIn" id= "buttons" align="center" style="width:400 px; position: absolute; left: 32%; top: 55%; height:4em; width: 400px; ">
+      <button type="button" id="invite" class="buttons" style="height: 55px; width: 140px" onclick="sendRequestViaMultiFriendSelector()">
+        Invite Friends!
+      </button>    
+      <font color="#FFFFFF" size = "5" face="Helvetica" padding="10px">
+      Or
+    </font>
+      <a href = "index2.html">
+	    	<button type="button" id="play" class="buttons" style="height: 55px; width: 140px" onclick="sendRequestViaMultiFriendSelector()">
+        		PLAY GAME!!!
+ 	    	</button>
+    </a>
+    </div>
+  </div>
+
+  </center>*/
+
+<script>
+function sendRequestViaMultiFriendSelector() {
+    FB.ui({
+        method: 'apprequests',
+        message: "This message is displayed in invitation"
+    },function(response) {
+      console.log(response);
+    });
+}
+
+/*
+function send_wall_invitation(response) {
+   // alert(response.to);
+    var send_invitation_url=base_url+'send_invitation';
+    jQuery.ajax({
+        url:send_invitation_url,
+        data:{
+            to:response.to
+            },
+        dataType:"json",
+        type: 'POST',
+        success: function(data){
+//            alert("");
+        }
+
+    })
+}*/
+</script>
+
+>>>>>>> 35a2f5e978c6e894f0b1ee17aab6545badc83c4e
 </body>
 </html>
