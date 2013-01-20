@@ -10,6 +10,7 @@
 	<!-- base64 packages -->
 	<script src="./inc/Polyfill/Base64.js" type="text/javascript"></script>
 	<script src="./inc/base64binary.js" type="text/javascript"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 	Awesome App
 </head>
 
@@ -194,6 +195,13 @@
         	if(trans) {
           	trans.stop();
  	       }
+
+
+ 	        $.get('/test', {
+ 	        		message: "lol"
+				}).complete(function(response) {
+					console.log(response);
+				});
 
  	       //Creates output array of boolean
 
